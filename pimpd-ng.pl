@@ -40,19 +40,22 @@ else {
 }
 
 sub playlist {
-  my $i = 0;
+  my $i = sprintf("%03d", 0);
   for($mpd->playlist->as_items) {
     my $title  = $_->title;
     my $artist = $_->artist;
     my $album  = $_->album;
     my $year   = $_->date;
     if($title eq $mpd->current->title and $artist eq $mpd->current->artist) {
-      printf("$c{bold}%4d$c{blue} %25.25s$c{def}  $c{darkblue}%s$c{def}\n",
+      printf("$c{bold}$i▕ $c{grey}%4d$c{blue} %25.25s$c{darkblue}  %s$c{def}\n",
         $year,$artist, $title);
     }
     else {
-      printf("$c{bold}$c{grey}%4d$c{def} %25.25s▕ %s\n", $year,$artist, $title);
+      printf("$i▕ $c{grey}%4d$c{def} %25.25s▕ %s\n", $year,$artist, $title);
+
     }
+    $i++;
   }
 }
+
 
