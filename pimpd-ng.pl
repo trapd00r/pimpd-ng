@@ -26,6 +26,7 @@ if($@) {
 # from config
 our($host, $port, $pass);
 our(%c);
+our($status_style);
 
 my $mpd = undef;
 if(defined($host)) { # remote
@@ -38,6 +39,9 @@ if(defined($host)) { # remote
 else {
   $mpd = Audio::MPD->new;
 }
+
+# options
+our($opt_oneline);
 
 sub playlist {
   my $i = sprintf("%03d", 0);
@@ -58,4 +62,18 @@ sub playlist {
   }
 }
 
+sub current {
+  my $artist = $mpd->current->artist // 'undef';
+  my $album  = $mpd->current->album  // 'undef';
+  my $title  = $mpd->current->title  // 'undef';
+  my $year   = $mpd->current->date   // 0000;
 
+  if($opt_oneline or $status_style eq 'oneline') {
+    # $opt_oneline from --no-color, $current_style from config.
+    # Show info on one line
+    printf("%s - %s (%s [%d])", $artist, $title, $album, $year);
+  }
+  else {
+    print "All info.\n";
+  }
+}
