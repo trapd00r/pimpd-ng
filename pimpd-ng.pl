@@ -47,11 +47,11 @@ sub playlist {
     my $album  = $_->album;
     my $year   = $_->date;
     if($title eq $mpd->current->title and $artist eq $mpd->current->artist) {
-      printf("$c{bold}$c{blue}%25.25s$c{def} » $c{darkblue}%s$c{def} (%4d)\n",
-        $artist, $title, $year);
+      printf("$c{bold}%4d$c{blue} %25.25s$c{def}  $c{darkblue}%s$c{def}\n",
+        $year,$artist, $title);
     }
     else {
-      printf("%25.25s▕ %s (%4d)\n", $artist, $title, $year);
+      printf("$c{bold}$c{grey}%4d$c{def} %25.25s▕ %s\n", $year,$artist, $title);
     }
   }
 }
