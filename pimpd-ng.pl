@@ -1,10 +1,11 @@
 #!/usr/bin/perl
 use strict;
 use Carp;
+use Getopt::Long;
 use Audio::MPD;
 
 our $VERSION = 2.0;
-our $APP     = 'pimpd';
+our $APP     = 'pimpd-ng';
 my  $DEBUG = 1;
 
 my $confdir = "ENV{HOME}/.config/pimpd-ng";
@@ -24,7 +25,7 @@ if($@) {
 
 # from config
 our($host, $port, $pass);
-our(%c);
+our(%c); # colors and attributes
 our($status_style);
 
 my $mpd = undef;
@@ -41,6 +42,18 @@ else {
 
 # options
 our($opt_oneline);
+GetOptions(
+  'playlist'    => \&playlist,
+  'current|np'  => \&current,
+  'clear'       => sub { $mpd->playlist->clear },
+  'albums'      => sub { print "$_\n" for(sort{$a cmp $b} albums_by_artist()) },
+);
+
+sub albums_by_artist {
+  my $artist = shift // $mpd->current->artist;
+  return if(!defined($artist));
+  return($mpd->collection->albums_by_artist($artist));
+}
 
 sub playlist {
   my $i = sprintf("%03d", 0);
@@ -78,4 +91,3 @@ sub current {
   }
 }
 
-playlist() and current();
