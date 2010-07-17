@@ -42,12 +42,40 @@ else {
 
 # options
 our($opt_oneline);
+our($playlist_dir, $favlist_format); # from config
 GetOptions(
   'playlist'    => \&playlist,
   'current|np'  => \&current,
   'clear'       => sub { $mpd->playlist->clear },
   'albums'      => sub { print "$_\n" for(sort{$a cmp $b} albums_by_artist()) },
+  'fav'         => sub { favlist($favlist_format) },
 );
+
+sub favlist {
+  # genre, date, custom string?
+  my $type = shift;
+  return() if(!defined($type));
+
+  #my $favlist_format = undef;
+  my $genre = $mpd->current->genre;
+
+  if($type eq 'genre') {
+    $favlist_format = "$genre";
+  }
+  elsif($type eq 'date') {
+    $favlist_format = time();
+  }
+  elsif($type eq 'both') {
+    $favlist_format = $genre . time();
+  }
+
+  open(my $fh, '>>', "$playlist_dir/$favlist_format.m3u")
+    or carp("Cant append to $playlist_dir/$favlist_format: $!");
+  print $fh $mpd->current->file, "\n";
+  close($fh);
+
+}
+
 
 sub albums_by_artist {
   my $artist = shift // $mpd->current->artist;
