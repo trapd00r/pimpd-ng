@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 use strict;
-use warnings;
 use Carp;
 use Audio::MPD;
 
@@ -8,17 +7,17 @@ our $VERSION = 2.0;
 our $APP     = 'pimpd';
 my  $DEBUG = 1;
 
-my $confdir = "ENV{HOME}/.config/pimpd2";
+my $confdir = "ENV{HOME}/.config/pimpd-ng";
 if("$ENV{XDG_CONFIG_HOME}") {
-  $confdir = "$ENV{XDG_CONFIG_HOME}/pimpd2";
+  $confdir = "$ENV{XDG_CONFIG_HOME}/pimpd-ng";
 }
 
 eval {
-  require "$confdir/pimpd2.conf" unless($DEBUG);
-  require "./pimpd2.conf" if($DEBUG);
+  require "$confdir/pimpd-ng.conf" unless($DEBUG);
+  require "./pimpd-ng.conf" if($DEBUG);
 };
 if($@) {
-  print "$confdir/pimpd2.conf does not exist:\n\n";
+  print "$confdir/pimpd-ng.conf does not exist:\n\n";
   warn($@);
   exit(1);
 }
@@ -50,7 +49,8 @@ sub playlist {
     my $artist = $_->artist;
     my $album  = $_->album;
     my $year   = $_->date;
-    if($title eq $mpd->current->title and $artist eq $mpd->current->artist) {
+    my $file   = $_->file;
+    if($file eq $mpd->current->file) {
       printf("$c{bold}$i▕ $c{grey}%4d$c{blue} %25.25s$c{darkblue}  %s$c{def}\n",
         $year,$artist, $title);
     }
@@ -77,3 +77,5 @@ sub current {
     print "All info.\n";
   }
 }
+
+playlist() and current();
